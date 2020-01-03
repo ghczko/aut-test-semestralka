@@ -22,37 +22,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 //import LoginTestSuite.*;
 
-public class ProjectTestSuite {
-    private ChromeDriver driver;
-    private String baseURL = "https://digitalnizena.cz/rukovoditel/";
-
-    @Before
-    public void init() {
-        ChromeOptions cho = new ChromeOptions();
-        driver = new ChromeDriver(cho);
-        driver.manage().window().maximize();
-    }
-
-    @After
-    public void tearDown() {
-        driver.close();
-    }
+public class ProjectTestSuite extends BaseTestSuite {
 
 
-    public void login() {
-        String username = "rukovoditel";
-        String password = "vse456ru";
-        driver.get(baseURL);
-
-        // WHEN user fill in credentials and click ok
-
-        WebElement usernameInput = driver.findElement(By.name("username"));
-        usernameInput.sendKeys(username);
-        WebElement passwordInput = driver.findElement(By.name("password"));
-        passwordInput.sendKeys(password);
-        WebElement loginButton = driver.findElement(By.xpath("//*[@id=\"login_form\"]/div[3]/button"));
-        loginButton.click();
-    }
 
 
     public void goToProjectForm() {
@@ -76,7 +48,7 @@ public class ProjectTestSuite {
     @Test
     public void givenUserIsLoggedIn_when_userWantsToCreateProjectWithOutName_then_projectIsNotCreated() throws InterruptedException {
         //GIVEN
-        login();
+
         //WHEN
         //go to projects
         WebElement projects = driver.findElement(By.xpath("/html/body/div[3]/div[1]/div/div/ul/li[4]/a"));
@@ -120,7 +92,7 @@ public class ProjectTestSuite {
         String projectName = "balt03" + uuid;
 
         //GIVEN
-        login();
+
         //WHEN
             //go to projects
             WebElement projects = driver.findElement(By.xpath("/html/body/div[3]/div[1]/div/div/ul/li[4]/a"));
