@@ -1,69 +1,23 @@
 package cz.balt03.rukovoditel.selenium;
-
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-
-import org.openqa.selenium.chrome.ChromeOptions;
-
 
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import java.util.UUID;
 
-import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-//import LoginTestSuite.*;
 
 public class ProjectTestSuite extends BaseTestSuite {
 
 
-
-
-    public void goToProjectForm() {
-
-        WebElement projects = driver.findElement(By.xpath("/html/body/div[3]/div[1]/div/div/ul/li[4]/a"));
-        projects.click();
-        //go to create project form
-        driver.get("https://digitalnizena.cz/rukovoditel/index.php?module=items/items&path=21");
-
-        // click create
-        WebElement createProjectButton = driver.findElement(By.xpath("/html/body/div[3]/div[2]/div/div/div[2]/div/div[4]/div[1]/div/button"));
-        WebDriverWait wait = new WebDriverWait(driver, 1);
-        wait.until(ExpectedConditions.visibilityOf(createProjectButton));
-        createProjectButton.click();
-
-        WebDriverWait wait2 = new WebDriverWait(driver, 5);
-        wait2.until(ExpectedConditions.visibilityOfElementLocated(By.id("fields_156")));
-
-    }
-
     @Test
     public void givenUserIsLoggedIn_when_userWantsToCreateProjectWithOutName_then_projectIsNotCreated() throws InterruptedException {
         //GIVEN
-
+            // in the BaseTestSuite
         //WHEN
-        //go to projects
-        WebElement projects = driver.findElement(By.xpath("/html/body/div[3]/div[1]/div/div/ul/li[4]/a"));
-        projects.click();
-        //go to create project form
-//        driver.get("https://digitalnizena.cz/rukovoditel/index.php?module=items/items&path=21");
-//
-//        // click create
-//        WebElement createProjectButton = driver.findElement(By.xpath("/html/body/div[3]/div[2]/div/div/div[2]/div/div[4]/div[1]/div/button"));
-//        WebDriverWait wait = new WebDriverWait(driver, 1);
-//        wait.until(ExpectedConditions.visibilityOf(createProjectButton));
-//        createProjectButton.click();
-//
-//        WebDriverWait wait2 = new WebDriverWait(driver, 5);
-//        wait2.until(ExpectedConditions.visibilityOfElementLocated(By.id("fields_156")));
+
         goToProjectForm();
 
         WebElement saveButton = driver.findElementByXPath("//*[@id=\"items_form\"]/div[2]/button[1]");
@@ -79,57 +33,21 @@ public class ProjectTestSuite extends BaseTestSuite {
 
         WebElement errorLabelResult = driver.findElement(By.xpath("/html/body/div[6]/div/div/form/div[2]/div[1]/div"));
 
-
         Assert.assertEquals("Some fields are required. They have been highlighted above.", errorLabelResult.getText());
         Assert.assertEquals(driver.getCurrentUrl(), "https://digitalnizena.cz/rukovoditel/index.php?module=items/items&path=21");
     }
 
-
     @Test
     public void givenUserIsLoggedIn_when_userWantsToCreateProjectWithSpecificParameters_then_projectIsCreated_and_deleted() throws InterruptedException {
 
-        UUID uuid = UUID.randomUUID();
-        String projectName = "balt03" + uuid;
-
         //GIVEN
-
+            // in the BaseTestSuite
         //WHEN
-            //go to projects
-            WebElement projects = driver.findElement(By.xpath("/html/body/div[3]/div[1]/div/div/ul/li[4]/a"));
-            projects.click();
+            //create project
 
-            //go to create project form
-            goToProjectForm();
-            // fill data
-
-            Select priority = new Select(driver.findElement(By.id("fields_156")));
-            priority.selectByVisibleText("Urgent");
-            priority.selectByValue("35");
-
-            Select status = new Select(driver.findElement(By.id("fields_157")));
-            status.selectByVisibleText("New");
-            status.selectByValue("37");
-
-            WebElement projectNameInput = driver.findElement(By.cssSelector("#fields_158"));
-            projectNameInput.sendKeys(projectName);
-
-            Date cur_dt = new Date();
-            DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-dd");
-            String strTodaysDate = dateFormat.format(cur_dt);
-            WebElement dateInput = driver.findElement(By.id("fields_159"));
-            dateInput.sendKeys(strTodaysDate);
-
-
-            // create project
-
-            WebElement saveButton = driver.findElementByXPath("//*[@id=\"items_form\"]/div[2]/button[1]");
-            saveButton.click();
-
+            createProject("35", "37");
 
         //THEN
-
-            WebDriverWait projectNameWait = new WebDriverWait(driver, 1);
-            projectNameWait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div[3]/div[2]/div/div/div[2]/div/div[1]/div/ul/li[2]/a")));
 
             WebElement projectNameResult = driver.findElement(By.xpath("/html/body/div[3]/div[2]/div/div/div[2]/div/div[1]/div/ul/li[2]/a"));
             Assert.assertEquals(projectName, projectNameResult.getText());

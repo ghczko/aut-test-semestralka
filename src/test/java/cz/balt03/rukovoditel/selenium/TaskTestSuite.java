@@ -12,128 +12,76 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.UUID;
-
-public class TaskTestSuite {
-
-    private ChromeDriver driver;
-    private String baseURL = "https://digitalnizena.cz/rukovoditel/";
-
-    @Before
-    public void init() {
-        ChromeOptions cho = new ChromeOptions();
-        driver = new ChromeDriver(cho);
-        driver.manage().window().maximize();
-    }
-    @After
-    public void tearDown() {
-        driver.close();
-    }
+import java.lang.reflect.Array;
+import java.util.*;
 
 
-    public void loginAndCreateProject() {
-        String username = "rukovoditel";
-        String password = "vse456ru";
-        UUID uuid = UUID.randomUUID();
-        String projectName = "balt03" + uuid;
-        driver.get(baseURL);
+public class TaskTestSuite extends BaseTestSuite {
 
-        // WHEN user fill in credentials and click ok
-
-        WebElement usernameInput = driver.findElement(By.name("username"));
-        usernameInput.sendKeys(username);
-        WebElement passwordInput = driver.findElement(By.name("password"));
-        passwordInput.sendKeys(password);
-        WebElement loginButton = driver.findElement(By.xpath("//*[@id=\"login_form\"]/div[3]/button"));
-        loginButton.click();
-
-        // create project
-        WebElement projects = driver.findElement(By.xpath("/html/body/div[3]/div[1]/div/div/ul/li[4]/a"));
-        projects.click();
-        //go to create project form
-        driver.get("https://digitalnizena.cz/rukovoditel/index.php?module=items/items&path=21");
-
-        // click create
-        WebElement createProjectButton = driver.findElement(By.xpath("/html/body/div[3]/div[2]/div/div/div[2]/div/div[4]/div[1]/div/button"));
-        WebDriverWait wait = new WebDriverWait(driver, 1);
-        wait.until(ExpectedConditions.visibilityOf(createProjectButton));
-        createProjectButton.click();
-
-        WebDriverWait wait2 = new WebDriverWait(driver, 5);
-        wait2.until(ExpectedConditions.visibilityOfElementLocated(By.id("fields_156")));
-
-        Select priority = new Select(driver.findElement(By.id("fields_156")));
-        priority.selectByVisibleText("Urgent");
-        priority.selectByValue("35");
-
-        Select status = new Select(driver.findElement(By.id("fields_157")));
-        status.selectByVisibleText("New");
-        status.selectByValue("37");
-
-        WebElement projectNameInput = driver.findElement(By.cssSelector("#fields_158"));
-        projectNameInput.sendKeys(projectName);
-
-        Date cur_dt = new Date();
-        DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-dd");
-        String strTodaysDate = dateFormat.format(cur_dt);
-        WebElement dateInput = driver.findElement(By.id("fields_159"));
-        dateInput.sendKeys(strTodaysDate);
-
-        // create project
-
-        WebElement saveButton = driver.findElementByXPath("//*[@id=\"items_form\"]/div[2]/button[1]");
-        saveButton.click();
-
-        WebDriverWait projectNameWait = new WebDriverWait(driver, 1);
-        projectNameWait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div[3]/div[2]/div/div/div[2]/div/div[1]/div/ul/li[2]/a")));
-    }
-
-    @Test
-    public void given_UserIsLoggedIn_and_projectIsCreated_when_taskIsCreatedWithSpecificParameters_then_taskParametersAreChecked_and_taskIsDeleted(){
-        //GIVEN
-        loginAndCreateProject();
-
-        //THEN
-        UUID uuid = UUID.randomUUID();
-        String taskName = "Task name" + uuid;
-
+    public void createTask(String taskNameValue, String typeValue, String statusValue, String priorityValue, String descriptionValue){
         WebElement addTaskButton = driver.findElement(By.xpath("/html/body/div[3]/div[2]/div/div/div[2]/div/div[4]/div[1]/div/button"));
         addTaskButton.click();
         WebDriverWait TaskFormWait = new WebDriverWait(driver, 5);
         TaskFormWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("fields_167")));
 
-        //fill data
-
         Select type = new Select(driver.findElement(By.id("fields_167")));
         type.selectByVisibleText("Task");
-        type.selectByValue("42");
+        type.selectByValue(typeValue);
 
         WebElement TaskNameInput = driver.findElement(By.cssSelector("#fields_168"));
-        TaskNameInput.sendKeys(taskName);
+        TaskNameInput.sendKeys(taskNameValue);
 
         Select statusTask = new Select(driver.findElement(By.id("fields_169")));
         statusTask.selectByVisibleText("New");
-        statusTask.selectByValue("46");
+        statusTask.selectByValue(statusValue);
 
-        Select prio = new Select(driver.findElement(By.id("fields_170")));
-        prio.selectByVisibleText("Medium");
-        prio.selectByValue("55");
+        Select priority = new Select(driver.findElement(By.id("fields_170")));
+        priority.selectByVisibleText("Medium");
+        priority.selectByValue(priorityValue);
 
         driver.switchTo().frame(0);
         WebElement descriptionTask = driver.findElement(By.xpath("/html/body"));
-        descriptionTask.sendKeys("Some description ...");
+        descriptionTask.sendKeys(descriptionValue);
         driver.switchTo().defaultContent();
 
         WebElement saveButton = driver.findElementByXPath("/html/body/div[6]/div/div/form/div[2]/button[1]");
         saveButton.click();
+        WebDriverWait taskNameWait = new WebDriverWait(driver, 1);
+        taskNameWait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div[3]/div[2]/div/div/div[2]/div/div[5]/div/div/div[1]/div/table/tbody/tr/td[6]/a")));
+
+    }
+
+    public void filtrationResultTest(List<String> statusForCompare,List<String> statusForCheck) {
+        WebDriverWait tableResultWait = new WebDriverWait(driver, 1);
+        tableResultWait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"slimScroll\"]/table/tbody/tr")));
+        List<WebElement> rows = driver.findElements(By.xpath("//*[@id=\"slimScroll\"]/table/tbody/tr"));
+
+        System.out.println(rows.size());
+        for (int i=1; i<=rows.size();i++) {
+            WebElement statusValue = driver.findElement(By.xpath("//*[@id=\"slimScroll\"]/table/tbody/tr[" + i + "]/td[7]/div"));
+            String statusText = statusValue.getText();
+            System.out.println(statusText);
+            statusForCheck.add(statusText);
+        }
+        ////*[@id=\"slimScroll\"]/table/tbody/tr[" + i + "]/td[7]/div
+        ///html/body/div[3]/div[2]/div/div/div[2]/div/div[6]/div/div/div[1]/div/table/tbody/tr[1]/td[7]/div
+        System.out.println(statusForCheck);
+        System.out.println(statusForCompare);
+        Assert.assertEquals(statusForCheck,statusForCompare);
+    }
+
+    @Test
+    public void given_UserIsLoggedIn_and_projectIsCreated_when_taskIsCreatedWithSpecificParameters_then_taskParametersAreChecked_and_taskIsDeleted(){
+
+        //GIVEN
+        createProject("35", "37");
+
+        //WHEN
+        String taskName = "Task name" + uuid;
+        createTask(taskName,"42","46", "55", "Some description ...");
 
         //THEN
 
-        WebDriverWait taskNameWait = new WebDriverWait(driver, 1);
-        taskNameWait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div[3]/div[2]/div/div/div[2]/div/div[5]/div/div/div[1]/div/table/tbody/tr/td[6]/a")));
         WebElement taskNameResult = driver.findElement(By.xpath("/html/body/div[3]/div[2]/div/div/div[2]/div/div[5]/div/div/div[1]/div/table/tbody/tr/td[6]/a"));
         Assert.assertEquals(taskName,taskNameResult.getText());
 
@@ -152,9 +100,85 @@ public class TaskTestSuite {
         WebElement resultOfSearch = driver.findElement(By.xpath("/html/body/div[3]/div[2]/div/div/div[2]/div/div[5]/div/div/div[1]/div/table/tbody/tr/td"));
 
         Assert.assertEquals("No Records Found", resultOfSearch.getText());
-
     }
 
+    @Test
+    public void giver_UserIsLoggedIn_and_projectExists_when_userCreateSevenDifferentTasks_then_onlyTaskWhichShouldBeShownAreShown() {
+        //GIVEN
+        createProject("35", "37");
+
+        //WHEN
+            //create tasks
+                String[] statusValues = {"46","47","48","49","50","51","52"};
+                String taskName = "Task name" + uuid;
+
+                for (int i = 0; i < statusValues.length; i++){
+                    createTask(taskName, "42", statusValues[i], "55", "Some description ...");
+                    taskName = taskName + "1";
+                }
+            //verify filters
+
+                List<String> statusForCompare1 = new ArrayList<String>(Arrays.asList("New", "Open", "Waiting"));
+                List<String> statusForCheck1 = new ArrayList<String>();
+
+                filtrationResultTest(statusForCompare1, statusForCheck1);
+
+            // change filter only for New and Waiting
+
+                WebElement openFiltration = driver.findElement(By.xpath("/html/body/div[3]/div[2]/div/div/div[2]/div/div[2]/div[2]/ul/li[2]/div"));
+                openFiltration.click();
+
+                WebDriverWait waitForFiltration = new WebDriverWait(driver, 5);
+                waitForFiltration.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div[6]/div/div/h4")));
+
+                WebElement openLabelCross = driver.findElement(By.xpath("/html/body/div[6]/div/form/div[1]/div/div[3]/div[2]/div/div/ul/li[2]/a"));
+                openLabelCross.click();
+
+                WebElement saveFiltrationButton = driver.findElement(By.xpath("/html/body/div[6]/div/form/div[2]/button[1]"));
+                saveFiltrationButton.click();
+
+                WebDriverWait waitForResults = new WebDriverWait(driver, 5);
+                waitForResults.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div[3]/div[2]/div/div/div[2]/div/div[5]/div/div/div[1]/div/table")));
+
+            // verify filters
+                List<String> statusForCompare2 = new ArrayList<String>(Arrays.asList("New", "Waiting"));
+                List<String> statusForCheck2 = new ArrayList<String>();
+                filtrationResultTest(statusForCompare2, statusForCheck2);
+
+            //change filter for all
+                WebElement cancelFiltration = driver.findElement(By.xpath("/html/body/div[3]/div[2]/div/div/div[2]/div/div[2]/div[2]/ul/li[1]/a[1]"));
+                cancelFiltration.click();
+                WebDriverWait waitForResults2 = new WebDriverWait(driver, 5);
+                waitForResults2.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div[3]/div[2]/div/div/div[2]/div/div[1]")));
+
+            //verify filter
+
+                List<String> statusForCompare3 = new ArrayList<String>(Arrays.asList("New","Open","Waiting","Done","Closed","Paid","Canceled"));
+                List<String> statusForCheck3 = new ArrayList<String>();
+                filtrationResultTest(statusForCompare3, statusForCheck3);
+
+            // delete tasks
+
+                WebElement selectAllTasks = driver.findElement(By.id("uniform-select_all_items"));
+                selectAllTasks.click();
+
+                //nefunguje
+                WebElement taskOptions = driver.findElement(By.xpath("/html/body/div[3]/div[2]/div/div/div[2]/div/div[4]/div[1]/div/div/ul/li[1]/a"));
+                taskOptions.click();
+
+                WebElement deleteTasksOptions = driver.findElement(By.xpath("/html/body/div[3]/div[2]/div/div/div[2]/div/div[4]/div[1]/div/div/ul/li[2]/a"));
+                deleteTasksOptions.click();
+
+                WebDriverWait waitForDeleteModal = new WebDriverWait(driver, 5);
+                waitForDeleteModal.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div[6]/div/div/h4")));
+                WebElement confirmDeleteTasks = driver.findElement(By.xpath("/html/body/div[6]/div/form/div[2]/button[1]"));
+                confirmDeleteTasks.click();
 
 
+                WebDriverWait waitForResults3 = new WebDriverWait(driver, 5);
+                waitForResults3.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div[3]/div[2]/div/div/div[2]/div/div[1]")));
+                WebElement resultOfSearch = driver.findElement(By.xpath("/html/body/div[3]/div[2]/div/div/div[2]/div/div[5]/div/div/div[1]/div/table/tbody/tr/td"));
+                Assert.assertEquals("No Records Found", resultOfSearch.getText());
+
+    }
 }
