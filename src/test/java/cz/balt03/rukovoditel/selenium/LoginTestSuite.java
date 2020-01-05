@@ -7,7 +7,7 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-
+import cz.balt03.rukovoditel.selenium.BaseTestSuite;
 import org.openqa.selenium.chrome.ChromeOptions;
 
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -17,14 +17,15 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class LoginTestSuite {
     private ChromeDriver driver;
+    BaseTestSuite baseTestSuite = new BaseTestSuite();
+    private String baseURL = baseTestSuite.getBaseURL();
 
-    private String baseURL = "https://digitalnizena.cz/rukovoditel/";
     @Before
     public void init() {
         ChromeOptions cho = new ChromeOptions();
-
         driver = new ChromeDriver(cho);
         driver.manage().window().maximize();
+        driver.get(baseURL);
     }
 
     @After
@@ -38,16 +39,10 @@ public class LoginTestSuite {
 
         String username = "rukovoditel";
         String password = "vse456ru";
-        driver.get(baseURL);
 
         // WHEN user fill in credentials and click ok
 
-        WebElement usernameInput = driver.findElement(By.name("username"));
-        usernameInput.sendKeys(username);
-        WebElement passwordInput = driver.findElement(By.name("password"));
-        passwordInput.sendKeys(password);
-        WebElement loginButton = driver.findElement(By.xpath("//*[@id=\"login_form\"]/div[3]/button"));
-        loginButton.click();
+       baseTestSuite.login(username,password);
 
         // THEN newly added deposit should be shown in deposits table grid
 
@@ -64,16 +59,10 @@ public class LoginTestSuite {
 
         String username = "rukovoditell";
         String password = "vse456ru!";
-        driver.get(baseURL);
 
         // WHEN user fill in credentials and click ok
 
-        WebElement usernameInput = driver.findElement(By.name("username"));
-        usernameInput.sendKeys(username);
-        WebElement passwordInput = driver.findElement(By.name("password"));
-        passwordInput.sendKeys(password);
-        WebElement loginButton = driver.findElement(By.xpath("//*[@id=\"login_form\"]/div[3]/button"));
-        loginButton.click();
+        baseTestSuite.login(username,password);
 
         // THEN newly added deposit should be shown in deposits table grid
 
@@ -90,14 +79,8 @@ public class LoginTestSuite {
 
         String username = "rukovoditel";
         String password = "vse456ru";
-        driver.get(baseURL);
 
-        WebElement usernameInput = driver.findElement(By.name("username"));
-        usernameInput.sendKeys(username);
-        WebElement passwordInput = driver.findElement(By.name("password"));
-        passwordInput.sendKeys(password);
-        WebElement loginButton = driver.findElement(By.xpath("//*[@id=\"login_form\"]/div[3]/button"));
-        loginButton.click();
+        baseTestSuite.login(username,password);
 
         // WHEN User clicks on log out
         driver.get("https://digitalnizena.cz/rukovoditel/index.php?module=users/login&action=logoff");

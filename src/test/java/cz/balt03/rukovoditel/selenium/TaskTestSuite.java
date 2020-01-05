@@ -60,13 +60,8 @@ public class TaskTestSuite extends BaseTestSuite {
         for (int i=1; i<=rows.size();i++) {
             WebElement statusValue = driver.findElement(By.xpath("//*[@id=\"slimScroll\"]/table/tbody/tr[" + i + "]/td[7]/div"));
             String statusText = statusValue.getText();
-            System.out.println(statusText);
             statusForCheck.add(statusText);
         }
-        ////*[@id=\"slimScroll\"]/table/tbody/tr[" + i + "]/td[7]/div
-        ///html/body/div[3]/div[2]/div/div/div[2]/div/div[6]/div/div/div[1]/div/table/tbody/tr[1]/td[7]/div
-        System.out.println(statusForCheck);
-        System.out.println(statusForCompare);
         Assert.assertEquals(statusForCheck,statusForCompare);
     }
 
@@ -104,7 +99,8 @@ public class TaskTestSuite extends BaseTestSuite {
 
     @Test
     public void giver_UserIsLoggedIn_and_projectExists_when_userCreateSevenDifferentTasks_then_onlyTaskWhichShouldBeShownAreShown() {
-        //GIVEN
+        WebDriverWait wait = new WebDriverWait(driver, 5);
+        //GIVEN  login in init method
         createProject("35", "37");
 
         //WHEN
@@ -159,26 +155,27 @@ public class TaskTestSuite extends BaseTestSuite {
 
             // delete tasks
 
-                WebElement selectAllTasks = driver.findElement(By.id("uniform-select_all_items"));
-                selectAllTasks.click();
+                wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id=\"uniform-select_all_items\"]")));
+                WebElement deleteAllTasks = driver.findElement(By.xpath("//div[@id=\"uniform-select_all_items\"]"));
+                deleteAllTasks.click();
 
-                //nefunguje
-                WebElement taskOptions = driver.findElement(By.xpath("/html/body/div[3]/div[2]/div/div/div[2]/div/div[4]/div[1]/div/div/ul/li[1]/a"));
-                taskOptions.click();
+                WebElement withSelected = driver.findElement(By.cssSelector(".btn-group > .btn-default"));
+                withSelected.click();
 
-                WebElement deleteTasksOptions = driver.findElement(By.xpath("/html/body/div[3]/div[2]/div/div/div[2]/div/div[4]/div[1]/div/div/ul/li[2]/a"));
-                deleteTasksOptions.click();
+                wait.until(ExpectedConditions.visibilityOfElementLocated(By.linkText("Delete")));
+                WebElement deleteBulk = driver.findElement(By.linkText("Delete"));
+                deleteBulk.click();
 
-                WebDriverWait waitForDeleteModal = new WebDriverWait(driver, 5);
-                waitForDeleteModal.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div[6]/div/div/h4")));
-                WebElement confirmDeleteTasks = driver.findElement(By.xpath("/html/body/div[6]/div/form/div[2]/button[1]"));
-                confirmDeleteTasks.click();
-
+                wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"delete_selected_form\"]/div[2]/button[1]")));
+                WebElement confirmDeleteBulk = driver.findElement(By.xpath(" //*[@id=\"delete_selected_form\"]/div[2]/button[1]"));
+                confirmDeleteBulk.click();
 
                 WebDriverWait waitForResults3 = new WebDriverWait(driver, 5);
-                waitForResults3.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div[3]/div[2]/div/div/div[2]/div/div[1]")));
-                WebElement resultOfSearch = driver.findElement(By.xpath("/html/body/div[3]/div[2]/div/div/div[2]/div/div[5]/div/div/div[1]/div/table/tbody/tr/td"));
-                Assert.assertEquals("No Records Found", resultOfSearch.getText());
+                waitForResults3.until(ExpectedConditions.visibilityOfElementLocated(By.id("slimScroll")));
+
+                WebElement table = driver.findElement(By.xpath("//*[@id=\"slimScroll\"]/table/tbody"));
+                List<WebElement> txt = table.findElements(By.tagName("tr"));
+                Assert.assertEquals(1, txt.size());
 
     }
 }

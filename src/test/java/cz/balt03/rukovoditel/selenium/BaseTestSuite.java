@@ -9,6 +9,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import cz.balt03.rukovoditel.selenium.LoginTestSuite;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -21,13 +22,29 @@ public class BaseTestSuite {
     private String baseURL = "https://digitalnizena.cz/rukovoditel/";
     UUID uuid = UUID.randomUUID();
     String projectName = "balt03" + uuid;
-
+    
     @Before
     public void init() {
+        //windows setup
+//                ChromeOptions cho = new ChromeOptions();
+//
+//                boolean runOnTravis = true;
+//                if (runOnTravis) {
+//                    cho.addArguments("headless");
+//                } else {
+//                    System.setProperty("webdriver.chrome.driver", "src/test/resources/drivers/chromedriverwin.exe");
+//                }
+//        //        ChromeDriverService service = new ChromeDriverService()
+//                driver = new ChromeDriver(cho);
+
+
+        // mac setup
         ChromeOptions cho = new ChromeOptions();
         driver = new ChromeDriver(cho);
         driver.manage().window().maximize();
-        login();
+        driver.get(baseURL);
+        login("rukovoditel","vse456ru");
+
     }
 
     @After
@@ -35,14 +52,11 @@ public class BaseTestSuite {
         driver.close();
     }
 
+    public String getBaseURL() {
+        return this.baseURL;
+    }
 
-    public void login() {
-        String username = "rukovoditel";
-        String password = "vse456ru";
-        driver.get(baseURL);
-
-        // WHEN user fill in credentials and click ok
-
+    public void login(String username, String password) {
         WebElement usernameInput = driver.findElement(By.name("username"));
         usernameInput.sendKeys(username);
         WebElement passwordInput = driver.findElement(By.name("password"));
@@ -54,13 +68,10 @@ public class BaseTestSuite {
     }
 
     public void goToProjectForm() {
-
         WebElement projects = driver.findElement(By.xpath("/html/body/div[3]/div[1]/div/div/ul/li[4]/a/span"));
         projects.click();
         WebDriverWait wait1 = new WebDriverWait(driver, 5);
         wait1.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div[3]/div[2]/div/div/div[2]/div/div[4]/div[1]/div/button")));
-        //go to create project form
-        //driver.get("https://digitalnizena.cz/rukovoditel/index.php?module=items/items&path=21");
 
         // click create
         WebElement createProjectButton = driver.findElement(By.xpath("/html/body/div[3]/div[2]/div/div/div[2]/div/div[4]/div[1]/div/button"));
@@ -101,6 +112,5 @@ public class BaseTestSuite {
 
         WebDriverWait projectNameWait = new WebDriverWait(driver, 1);
         projectNameWait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div[3]/div[2]/div/div/div[2]/div/div[1]/div/ul/li[2]/a")));
-
     }
 }
