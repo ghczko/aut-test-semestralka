@@ -1,22 +1,17 @@
 package cz.balt03.rukovoditel.selenium;
 
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 
-public class TaskTestSuite extends BaseTestSuite {
+public class TaskTestSuite extends Common {
 
     public void createTask(String taskNameValue, String typeValue, String statusValue, String priorityValue, String descriptionValue){
         WebElement addTaskButton = driver.findElement(By.xpath("/html/body/div[3]/div[2]/div/div/div[2]/div/div[4]/div[1]/div/button"));

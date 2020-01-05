@@ -16,13 +16,13 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
-public class BaseTestSuite {
+public class Common {
 
     protected ChromeDriver driver;
     private String baseURL = "https://digitalnizena.cz/rukovoditel/";
     UUID uuid = UUID.randomUUID();
     String projectName = "balt03" + uuid;
-    
+
     @Before
     public void init() {
         //windows setup

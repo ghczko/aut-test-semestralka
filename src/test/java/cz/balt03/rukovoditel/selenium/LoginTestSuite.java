@@ -7,7 +7,6 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-import cz.balt03.rukovoditel.selenium.BaseTestSuite;
 import org.openqa.selenium.chrome.ChromeOptions;
 
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -17,8 +16,8 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class LoginTestSuite {
     private ChromeDriver driver;
-    BaseTestSuite baseTestSuite = new BaseTestSuite();
-    private String baseURL = baseTestSuite.getBaseURL();
+    Common common = new Common();
+    private String baseURL = common.getBaseURL();
 
     @Before
     public void init() {
@@ -42,7 +41,7 @@ public class LoginTestSuite {
 
         // WHEN user fill in credentials and click ok
 
-       baseTestSuite.login(username,password);
+       common.login(username,password);
 
         // THEN newly added deposit should be shown in deposits table grid
 
@@ -62,7 +61,7 @@ public class LoginTestSuite {
 
         // WHEN user fill in credentials and click ok
 
-        baseTestSuite.login(username,password);
+        common.login(username,password);
 
         // THEN newly added deposit should be shown in deposits table grid
 
@@ -80,7 +79,7 @@ public class LoginTestSuite {
         String username = "rukovoditel";
         String password = "vse456ru";
 
-        baseTestSuite.login(username,password);
+        common.login(username,password);
 
         // WHEN User clicks on log out
         driver.get("https://digitalnizena.cz/rukovoditel/index.php?module=users/login&action=logoff");

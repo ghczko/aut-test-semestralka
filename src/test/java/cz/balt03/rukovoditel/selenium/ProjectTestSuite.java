@@ -5,11 +5,10 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import java.util.UUID;
 
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-public class ProjectTestSuite extends BaseTestSuite {
+public class ProjectTestSuite extends Common {
 
 
     @Test
@@ -89,10 +88,6 @@ public class ProjectTestSuite extends BaseTestSuite {
                 WebElement resultOfSearch = driver.findElement(By.xpath("/html/body/div[3]/div[2]/div/div/div[2]/div/div[5]/div/div/div[2]/div/table/tbody/tr/td"));
 
            Assert.assertEquals("No Records Found", resultOfSearch.getText());
-
-
-
-
 
 
     }
